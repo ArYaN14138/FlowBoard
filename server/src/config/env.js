@@ -1,20 +1,11 @@
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const envPath = path.resolve(__dirname, "../../.env");
-
-const dotenvResult = dotenv.config({ path: envPath, override: true });
+// Load .env only in development
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 const required = ["MONGO_URI", "JWT_SECRET"];
-
-if (dotenvResult.error) {
-  console.warn(`Could not load .env from ${envPath}: ${dotenvResult.error.message}`);
-} else {
-  console.log(`Loaded environment from ${envPath}`);
-}
 
 for (const key of required) {
   if (!process.env[key]) {
