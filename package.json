@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm --prefix server install && npm --prefix client install && npm --prefix client run build",
-    "start": "npm --prefix server start",
-    "dev:server": "npm --prefix server run dev",
-    "dev:client": "npm --prefix client run dev"
+    "build": "npm install --prefix client && npm run build --prefix client",
+    "start": "npm install --prefix server && npm start --prefix server",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client"
   }
 }
