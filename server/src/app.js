@@ -24,8 +24,7 @@ import { errorHandler, notFoundHandler } from "./middleware/error.middleware.js"
 const app = express();
 
 // ✅ FIX FOR RAILWAY (VERY IMPORTANT)
-app.set("trust proxy", 1);
-
+app.set("trust proxy", true);
 const server = http.createServer(app);
 
 const __filename = fileURLToPath(import.meta.url);
