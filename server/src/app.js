@@ -22,12 +22,19 @@ import { User } from "./models/User.js";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware.js";
 
 const app = express();
+
+// ✅ FIX FOR RAILWAY (VERY IMPORTANT)
+app.set("trust proxy", 1);
+
 const server = http.createServer(app);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clientDistPath = path.resolve(__dirname, "../../client/dist");
 const uploadsPath = path.resolve(__dirname, "../uploads");
+
 fs.mkdirSync(uploadsPath, { recursive: true });
+
 const io = new Server(server, {
   cors: {
     origin: env.CLIENT_URL,
@@ -55,16 +62,20 @@ io.on("connection", (socket) => {
 });
 
 app.use(helmet());
+
 app.use(
   cors({
     origin: env.CLIENT_URL,
     credentials: true
   })
 );
+
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(uploadsPath));
+
 app.use(morgan(env.NODE_ENV === "production" ? "combined" : "dev"));
+
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -86,7 +97,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// Backward-compatible mounts for local clients still using VITE_API_URL=http://localhost:5000.
+// Backward-compatible mounts
 app.use("/auth", authRoutes);
 app.use("/ai", aiRoutes);
 app.use("/users", userRoutes);
@@ -97,6 +108,7 @@ app.use("/notifications", notificationRoutes);
 
 if (env.NODE_ENV === "production") {
   app.use(express.static(clientDistPath));
+
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(clientDistPath, "index.html"));
